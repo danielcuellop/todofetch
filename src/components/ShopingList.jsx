@@ -1,11 +1,25 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import ShoppingItem from "./ShopingItem.jsx";
 
 
+
+
+
 const ShoppingList = () => {
-    // vamos crear una variable de estado que guarde lo que escribo en el input
-    const [item, setItem] = useState('')
+
+    
     const [list, setList] = useState([])
+    useEffect(() => {
+    fetch('https://assets.breatheco.de/apis/fake/todos/user/cuellop')
+      .then((response) => response.json())
+      .then((name) => setList(name))
+      console.log(list)
+      
+  }, []);
+    
+     const [item, setItem] = useState([])
+     
+    
 
     const handleInputChange = (event) => {
         setItem(event.target.value)
@@ -13,15 +27,38 @@ const ShoppingList = () => {
     }
 
     // cuando apriete el boton de agregar el valor del input lo vamos a añadir a un array
-    const handleAddItem = () => {
-        const newList = [...list];
-        newList.push(item);
+
+
+
+    async function putFunction(newList) {
+        try {
+          const url = 'https://assets.breatheco.de/apis/fake/todos/user/cuellop';
+          const response = await fetch(url, {
+            method: 'PUT',
+            body: JSON.stringify(newList),
+            headers: {
+              'Content-Type': 'application/json'
+            }
+          });
+          const data = await response.json();
+          console.log(data);
+        } catch (error) {
+          console.error('Error:', error);
+        }
+      }
+      
+      
+      const handleAddItem = () => {
+        const newTask = { label: item, done: false };
+        const newList = [...list, newTask];
         setList(newList);
-        setItem('')
-    }
+        putFunction(newList);
+        setItem('');
+      };
+    
 
     const handleDeleteItem = (index) => {
-        // list.splice(index, 1)
+        //list.splice(index, 1)
         setList((previousList) => {
             const auxList = [...previousList]
             auxList.splice(index, 1)
@@ -46,7 +83,7 @@ const ShoppingList = () => {
                 {
                     list.map((item, index) => (
                         <ShoppingItem
-                        name={item}
+                        name={item.label}
                         posicion={index}
                         deleteItem={() => { handleDeleteItem(index)}}
                     />
