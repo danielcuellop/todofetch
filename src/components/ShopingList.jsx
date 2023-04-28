@@ -62,6 +62,7 @@ const ShoppingList = () => {
         setList((previousList) => {
             const auxList = [...previousList]
             auxList.splice(index, 1)
+            putFunction(auxList)
             return auxList
         })
     }
